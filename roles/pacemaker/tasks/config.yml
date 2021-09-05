@@ -1,0 +1,22 @@
+- name: config | Setting hacluster password
+  user:
+    name:  "{{ pacemaker_hacluster_user }}"
+    password: "{{ pacemaker_hacluster_sha }}"
+  become: true
+
+- name: pcs auth
+  shell: |
+    pcs cluster auth {{ groups['servers']|join(' ') }} -u {{ pacemaker_hacluster_user }} -p  {{ pacemaker_hacluster_password }}
+    pcs cluster setup --name {{ pacemaker_hacluster_name }} {{ groups['servers']|join(' ') }}
+    pcs cluster start --all
+  ignore_errors: True
+
+
+- name: Configure fencing on Virtualbox
+  shell: |
+    pcs stonith create pcm1_fence_dev fence_vbox ipaddr={{ virtualbox_host }} login={{ virtualbox_host_username }} passwd={{ virtualbox_host_password }} power_wait=10 secure=1 port=pcm1 pcmk_host_list=pcm1
+    pcs stonith create pcm2_fence_dev fence_vbox ipaddr={{ virtualbox_host }} login={{ virtualbox_host_username }} passwd={{ virtualbox_host_password }} power_wait=10 secure=1 port=pcm2 pcmk_host_list=pcm2
+    pcs stonith create pcm3_fence_dev fence_vbox ipaddr={{ virtualbox_host }} login={{ virtualbox_host_username }} passwd={{ virtualbox_host_password }} power_wait=10 secure=1 port=pcm3 pcmk_host_list=pcm3
+    pcs constraint location pcm1_fence_dev avoids pcm1
+    pcs constraint location pcm2_fence_dev avoids pcm2
+    pcs constraint location pcm3_fence_dev avoids pcm3
