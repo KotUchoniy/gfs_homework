@@ -11,7 +11,7 @@ ansible-playbook main.yml
 ```
 
 ##### Комментарии:
-  IP-адреса в [vagrantfile](vagrantfile), [hosts.yml](hosts.yml) и в [файле базового конфигурирования](roles/base_config/tasks/main.yml) и соответствуют следующей таблице:
+  IP-адреса в [vagrantfile](vagrantfile), [hosts.yml](hosts.yml) и соответствуют следующей таблице:
 
 | IP адрес | Имя машины |
 |----------------|--------------------|
